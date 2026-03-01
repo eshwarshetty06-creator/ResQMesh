@@ -632,28 +632,34 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
 
                                 <button className="btn-glow-primary" onClick={() => {
                                     setStatus('SYNCING...');
-                                    // Connect to LOCAL PeerJS server (LAN/hotspot — no internet)
+                                    // Detect environment: use cloud backend on hosted deployments,
+                                    // fall back to local PeerJS server on localhost/LAN.
+                                    const isLocal = window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./);
+                                    const peerHost = isLocal ? window.location.hostname : (import.meta.env.VITE_PEER_HOST || 'resqmesh.onrender.com');
+                                    const peerPort = isLocal ? 9000 : parseInt(import.meta.env.VITE_PEER_PORT || '443');
+                                    const peerPath = import.meta.env.VITE_PEER_PATH || '/peerjs';
+                                    const peerSecure = !isLocal; // use WSS on cloud, WS locally
+
                                     const peer = new Peer(customId, {
-                                        host: window.location.hostname,
-                                        port: 9000,
-                                        path: '/peerjs',
-                                        secure: false,
+                                        host: peerHost,
+                                        port: peerPort,
+                                        path: peerPath,
+                                        secure: peerSecure,
                                         config: {
-                                            // No STUN needed — all devices on same LAN/hotspot
-                                            // share the same subnet, so WebRTC works locally.
-                                            // Add STUN only if devices are on DIFFERENT networks.
-                                            iceServers: []
+                                            iceServers: peerSecure
+                                                ? [{ urls: 'stun:stun.l.google.com:19302' }] // STUN for cloud (devices on diff networks)
+                                                : [] // No STUN needed on LAN
                                         }
                                     });
                                     peer.on('open', id => {
                                         setMyId(id);
-                                        setStatus('🟢 ONLINE — LOCAL MESH');
+                                        setStatus(isLocal ? '🟢 ONLINE — LOCAL MESH' : '🟢 ONLINE — CLOUD MESH');
                                         navigator.geolocation.getCurrentPosition(p => setMyLocation([p.coords.latitude, p.coords.longitude]));
                                     });
                                     peer.on('connection', c => setupConnection(c));
                                     peer.on('error', (e) => {
                                         console.warn('PeerJS error:', e);
-                                        setStatus('⚠️ LOCAL SERVER OFFLINE — run: npm run server');
+                                        setStatus(isLocal ? '⚠️ LOCAL SERVER OFFLINE — run: npm run server' : '⚠️ CLOUD SERVER UNREACHABLE');
                                     });
                                     peerRef.current = peer;
                                 }}>ACTIVATE MESH</button>
