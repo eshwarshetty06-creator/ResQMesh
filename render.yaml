@@ -1,0 +1,35 @@
+# render.yaml — Deploy both services to Render.com with one click
+# https://render.com/docs/blueprint-spec
+
+services:
+  # ── 1. PeerJS Signaling Backend ─────────────────────────────────────────────
+  - type: web
+    name: resqmesh-server
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # ── 2. React Frontend (static site) ─────────────────────────────────────────
+  - type: web
+    name: resqmesh-frontend
+    runtime: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      # After deploying the server above, replace the value below with your
+      # Render backend URL, e.g.: resqmesh-server.onrender.com
+      - key: VITE_PEER_HOST
+        value: resqmesh-server.onrender.com
+      - key: VITE_PEER_PORT
+        value: "443"
+      - key: VITE_PEER_PATH
+        value: /peerjs
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
