@@ -739,23 +739,22 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                         </div>
                                     </div>
                                 )}
-                                <div className="input-strip-modern glass">
-                                    <button className="icon-btn" onClick={shareLocation}><MapPin size={20} /></button>
+                                <form className="input-strip-modern glass" onSubmit={e => {
+                                    e.preventDefault();
+                                    if (msgInput.trim()) { sendMessage(msgInput.trim()); setMsgInput(''); }
+                                }}>
+                                    <button type="button" className="icon-btn" onClick={shareLocation}><MapPin size={20} /></button>
                                     <input
+                                        type="text"
                                         placeholder="BROADCAST ENCRYPTED PACKET..."
                                         value={msgInput}
                                         onChange={e => setMsgInput(e.target.value)}
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter' && msgInput.trim()) {
-                                                sendMessage(msgInput.trim());
-                                                setMsgInput('');
-                                            }
-                                        }}
+                                        autoComplete="off"
+                                        autoCorrect="off"
+                                        enterKeyHint="send"
                                     />
-                                    <button className="icon-btn-action" onClick={() => {
-                                        if (msgInput.trim()) { sendMessage(msgInput.trim()); setMsgInput(''); }
-                                    }}><Zap size={20} /></button>
-                                </div>
+                                    <button type="submit" className="icon-btn-action"><Zap size={20} /></button>
+                                </form>
                                 <div className="quick-link-bar">
                                     <input value={peerIdInput} onChange={e => setPeerIdInput(e.target.value.toUpperCase())} placeholder="PEER ID" />
                                     <button onClick={() => connectToPeer()}>SYNC</button>
