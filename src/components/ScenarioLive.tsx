@@ -76,6 +76,7 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
     const [myLocation, setMyLocation] = useState<[number, number] | null>(null);
     const [customId, setCustomId] = useState('');
     const [qrDataUrl, setQrDataUrl] = useState<string>('');
+    const [msgInput, setMsgInput] = useState('');  // controlled chat input
     const [dtfQueue, setDtfQueue] = useState<string[]>([]); // Store-Carry-Forward offline queue
 
     // --- SERVER-FREE DIRECT MODE STATE ---
@@ -742,9 +743,18 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                     <button className="icon-btn" onClick={shareLocation}><MapPin size={20} /></button>
                                     <input
                                         placeholder="BROADCAST ENCRYPTED PACKET..."
-                                        onKeyDown={e => { if (e.key === 'Enter') { sendMessage(e.currentTarget.value); e.currentTarget.value = ''; } }}
+                                        value={msgInput}
+                                        onChange={e => setMsgInput(e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter' && msgInput.trim()) {
+                                                sendMessage(msgInput.trim());
+                                                setMsgInput('');
+                                            }
+                                        }}
                                     />
-                                    <button className="icon-btn-action"><Zap size={20} /></button>
+                                    <button className="icon-btn-action" onClick={() => {
+                                        if (msgInput.trim()) { sendMessage(msgInput.trim()); setMsgInput(''); }
+                                    }}><Zap size={20} /></button>
                                 </div>
                                 <div className="quick-link-bar">
                                     <input value={peerIdInput} onChange={e => setPeerIdInput(e.target.value.toUpperCase())} placeholder="PEER ID" />
