@@ -76,8 +76,9 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
     const [myLocation, setMyLocation] = useState<[number, number] | null>(null);
     const [customId, setCustomId] = useState('');
     const [qrDataUrl, setQrDataUrl] = useState<string>('');
-    const [msgInput, setMsgInput] = useState('');  // controlled chat input
-    const [dtfQueue, setDtfQueue] = useState<string[]>([]); // Store-Carry-Forward offline queue
+    const [msgInput, setMsgInput] = useState('');
+    const msgInputRef = useRef(''); // always-fresh value for mobile event handlers
+    const [dtfQueue, setDtfQueue] = useState<string[]>([]);
 
     // --- SERVER-FREE DIRECT MODE STATE ---
     const [directMode, setDirectMode] = useState<'idle' | 'offering' | 'waiting-answer' | 'answering' | 'connected'>('idle');
@@ -655,40 +656,24 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                 </div>
 
                                 <button className="btn-glow-primary" onClick={async () => {
-                                    setStatus('⏳ WAKING SERVER...');
-                                    const isLocal = window.location.hostname === 'localhost' || !!window.location.hostname.match(/^192\.168\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./);
-                                    const peerHost = isLocal ? window.location.hostname : (import.meta.env.VITE_PEER_HOST || 'resqmesh.onrender.com');
-                                    const peerPort = isLocal ? 9000 : parseInt(import.meta.env.VITE_PEER_PORT || '443');
-                                    const peerPath = import.meta.env.VITE_PEER_PATH || '/peerjs';
-                                    const peerSecure = !isLocal;
+                                    setStatus('⏳ CONNECTING...');
 
-                                    // Ping server first (wakes Render free tier if sleeping)
-                                    if (peerSecure) {
-                                        try { await fetch(`https://${peerHost}${peerPath}`, { signal: AbortSignal.timeout(8000) }); } catch { /**/ }
-                                    }
-                                    setStatus('📡 SYNCING...');
-
-                                    // ICE servers: STUN + free TURN for NAT traversal on mobile networks
-                                    // TURN is critical for devices on different 4G/5G carrier networks
-                                    const iceServers = peerSecure ? [
-                                        { urls: 'stun:stun.l.google.com:19302' },
-                                        { urls: 'stun:stun1.l.google.com:19302' },
-                                        { urls: 'stun:stun.cloudflare.com:3478' },
-                                        // Free TURN relay — handles symmetric NAT (mobile carriers)
-                                        { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-                                        { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-                                        { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
-                                    ] : [];
-
+                                    // ICE: STUN + TURN for mobile NAT traversal across different carriers
                                     const peer = new Peer(customId, {
-                                        host: peerHost, port: peerPort, path: peerPath, secure: peerSecure,
-                                        config: { iceServers }
+                                        config: {
+                                            iceServers: [
+                                                { urls: 'stun:stun.l.google.com:19302' },
+                                                { urls: 'stun:stun1.l.google.com:19302' },
+                                                { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+                                                { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+                                                { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
+                                            ]
+                                        }
                                     });
 
-                                    // Timeout: if Render is still sleeping / ID already taken
                                     const openTimeout = setTimeout(() => {
                                         if (!peer.id) {
-                                            setStatus('⚠️ SERVER SLOW — Render is waking up. Try again in 30s.');
+                                            setStatus('⚠️ TIMEOUT — Check internet & try again');
                                             peer.destroy();
                                         }
                                     }, 20000);
@@ -696,17 +681,18 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                     peer.on('open', id => {
                                         clearTimeout(openTimeout);
                                         setMyId(id);
-                                        setStatus(isLocal ? '🟢 ONLINE — LOCAL MESH' : '🟢 ONLINE — CLOUD MESH');
-                                        navigator.geolocation.getCurrentPosition(p => setMyLocation([p.coords.latitude, p.coords.longitude]));
+                                        setStatus('🟢 ONLINE — MESH READY');
+                                        navigator.geolocation.getCurrentPosition(
+                                            p => setMyLocation([p.coords.latitude, p.coords.longitude]),
+                                            () => { }
+                                        );
                                     });
                                     peer.on('connection', c => setupConnection(c));
                                     peer.on('error', (e: any) => {
                                         clearTimeout(openTimeout);
-                                        console.warn('PeerJS error:', e);
-                                        if (e?.type === 'peer-unavailable') setStatus('⚠️ PEER NOT FOUND — Check the ID and ensure they are ONLINE first');
-                                        else if (e?.type === 'unavailable-id') setStatus('⚠️ ID TAKEN — Change your Node Designation and retry');
-                                        else if (e?.type === 'network') setStatus('⚠️ NETWORK ERROR — Check internet connection');
-                                        else setStatus(isLocal ? '⚠️ LOCAL SERVER OFFLINE' : '⚠️ SERVER ERROR — Try again in 30s');
+                                        if (e?.type === 'peer-unavailable') setStatus('⚠️ PEER NOT FOUND — Is the other device online?');
+                                        else if (e?.type === 'unavailable-id') setStatus('⚠️ ID TAKEN — Change Node ID and retry');
+                                        else { setStatus('⚠️ ERROR — Check internet and retry'); console.warn('PeerJS:', e); }
                                     });
                                     peerRef.current = peer;
                                 }}>ACTIVATE MESH</button>
@@ -741,25 +727,26 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                 )}
                                 <form className="input-strip-modern glass" onSubmit={e => {
                                     e.preventDefault();
-                                    if (msgInput.trim()) { sendMessage(msgInput.trim()); setMsgInput(''); }
+                                    const msg = msgInputRef.current.trim();
+                                    if (msg) { sendMessage(msg); setMsgInput(''); msgInputRef.current = ''; }
                                 }}>
                                     <button type="button" className="icon-btn" onClick={shareLocation}><MapPin size={20} /></button>
                                     <input
                                         type="text"
                                         placeholder="BROADCAST ENCRYPTED PACKET..."
                                         value={msgInput}
-                                        onChange={e => setMsgInput(e.target.value)}
+                                        onChange={e => { setMsgInput(e.target.value); msgInputRef.current = e.target.value; }}
                                         autoComplete="off"
                                         autoCorrect="off"
                                         enterKeyHint="send"
                                     />
-                                    {/* onPointerDown fires BEFORE input blur on Android — reads msgInput before keyboard dismisses */}
                                     <button
-                                        type="submit"
+                                        type="button"
                                         className="icon-btn-action"
                                         onPointerDown={e => {
-                                            e.preventDefault(); // stop blur race
-                                            if (msgInput.trim()) { sendMessage(msgInput.trim()); setMsgInput(''); }
+                                            e.preventDefault();
+                                            const msg = msgInputRef.current.trim();
+                                            if (msg) { sendMessage(msg); setMsgInput(''); msgInputRef.current = ''; }
                                         }}
                                     ><Zap size={20} /></button>
                                 </form>
