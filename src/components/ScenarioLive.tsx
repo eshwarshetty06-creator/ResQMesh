@@ -395,12 +395,31 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
     };
 
     const connectToPeer = (id?: string) => {
-        const tid = (id || peerIdInput).toUpperCase();
-        if (!tid || tid === myId) return;
-        setStatus(`SIGNALING ${tid}...`);
-        const c = peerRef.current!.connect(tid);
-        c.on('open', () => { setStatus('ONLINE'); setupConnection(c); setPeerIdInput(''); setShowScanner(false); });
-        c.on('error', () => setStatus('LINK FAILED'));
+        const tid = (id || peerIdInput).trim().toUpperCase();
+        if (!tid || tid === myId || !peerRef.current) return;
+        setStatus(`📡 SIGNALING ${tid}...`);
+        addLog(`📡 Attempting connection to: ${tid}`);
+        const c = peerRef.current.connect(tid, { reliable: true });
+        // Timeout: if no connection after 15s, show error
+        const timeoutId = setTimeout(() => {
+            if (c.open === false) {
+                setStatus('⚠️ CONNECTION TIMEOUT — Is the other device online with that ID?');
+                addLog(`⏱ CONNECTION TIMEOUT: ${tid} did not respond`);
+            }
+        }, 15000);
+        c.on('open', () => {
+            clearTimeout(timeoutId);
+            setStatus('🟢 ONLINE — CLOUD MESH');
+            addLog(`✅ CONNECTED to ${tid}`);
+            setupConnection(c);
+            setPeerIdInput('');
+            setShowScanner(false);
+        });
+        c.on('error', (e: any) => {
+            clearTimeout(timeoutId);
+            setStatus(`⚠️ LINK FAILED: ${e?.type || 'unknown error'}`);
+            addLog(`❌ LINK FAILED to ${tid}: ${e?.type}`);
+        });
     };
 
     // --- FEATURES ---
@@ -638,11 +657,10 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                     setStatus('SYNCING...');
                                     // Detect environment: use cloud backend on hosted deployments,
                                     // fall back to local PeerJS server on localhost/LAN.
-                                    const isLocal = window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./);
-                                    const peerHost = isLocal ? window.location.hostname : (import.meta.env.VITE_PEER_HOST || 'resqmesh.onrender.com');
+                                    const isLocal = window.location.hostname === 'localhost' || !!window.location.hostname.match(/^192\.168\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./); const peerHost = isLocal ? window.location.hostname : (import.meta.env.VITE_PEER_HOST || 'resqmesh.onrender.com');
                                     const peerPort = isLocal ? 9000 : parseInt(import.meta.env.VITE_PEER_PORT || '443');
                                     const peerPath = import.meta.env.VITE_PEER_PATH || '/peerjs';
-                                    const peerSecure = !isLocal; // use WSS on cloud, WS locally
+                                    const peerSecure = !isLocal;
 
                                     const peer = new Peer(customId, {
                                         host: peerHost,
@@ -650,9 +668,15 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                         path: peerPath,
                                         secure: peerSecure,
                                         config: {
-                                            iceServers: peerSecure
-                                                ? [{ urls: 'stun:stun.l.google.com:19302' }] // STUN for cloud (devices on diff networks)
-                                                : [] // No STUN needed on LAN
+                                            iceServers: peerSecure ? [
+                                                // Multiple STUN servers for reliable NAT traversal on mobile networks
+                                                { urls: 'stun:stun.l.google.com:19302' },
+                                                { urls: 'stun:stun1.l.google.com:19302' },
+                                                { urls: 'stun:stun2.l.google.com:19302' },
+                                                { urls: 'stun:stun3.l.google.com:19302' },
+                                                { urls: 'stun:stun4.l.google.com:19302' },
+                                                { urls: 'stun:stun.cloudflare.com:3478' },
+                                            ] : []
                                         }
                                     });
                                     peer.on('open', id => {
@@ -661,9 +685,10 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                         navigator.geolocation.getCurrentPosition(p => setMyLocation([p.coords.latitude, p.coords.longitude]));
                                     });
                                     peer.on('connection', c => setupConnection(c));
-                                    peer.on('error', (e) => {
+                                    peer.on('error', (e: any) => {
                                         console.warn('PeerJS error:', e);
-                                        setStatus(isLocal ? '⚠️ LOCAL SERVER OFFLINE — run: npm run server' : '⚠️ CLOUD SERVER UNREACHABLE');
+                                        const msg = e?.type === 'peer-unavailable' ? '⚠️ PEER NOT FOUND — Check ID & both devices must be ONLINE' : (isLocal ? '⚠️ LOCAL SERVER OFFLINE' : '⚠️ CLOUD SERVER UNREACHABLE');
+                                        setStatus(msg);
                                     });
                                     peerRef.current = peer;
                                 }}>ACTIVATE MESH</button>
@@ -929,7 +954,7 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                 </div>
                                 <h2 className="qr-id">{myId}</h2>
                                 <p className="qr-sub">📡 LOCAL MESH — No internet needed. Scan to link node.</p>
-                                <p className="qr-sub" style={{ color: '#00f2fe', fontSize: '0.6rem', marginTop: 4 }}>SERVER: {window.location.hostname}:9000</p>
+                                <p className="qr-sub" style={{ color: '#00f2fe', fontSize: '0.6rem', marginTop: 4 }}>SERVER: {import.meta.env.VITE_PEER_HOST || 'resqmesh.onrender.com'}</p>
                             </div>
                         </div>
                     )

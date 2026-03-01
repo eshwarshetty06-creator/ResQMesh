@@ -95,7 +95,6 @@ export default function Dashboard({ onSelectScenario }: DashboardProps) {
       if (!ctx) { stream.getTracks().forEach(t => t.stop()); setIsScanning(false); return; }
       let rollingAvg = -1, lastPeakTime = performance.now(), peaks: number[] = [], bpmHistory: number[] = [],
         signalBuf: number[] = [], maxSig = 0.05, beatOn = false, warmFrames = 0, frameCount = 0;
-      let simBpm = 70 + Math.round((Math.random() - 0.5) * 18), simPhase = Math.random() * Math.PI * 2;
 
       scanIntervalRef.current = setInterval(() => {
         frameCount++;
@@ -124,18 +123,7 @@ export default function Dashboard({ onSelectScenario }: DashboardProps) {
             }
           } else rollingAvg = avgR;
         }
-        const elapsed = frameCount * 33;
-        if (elapsed > 5000 && liveBpmRef.current === 0) {
-          const now = performance.now(); simPhase += (simBpm / 60) * (33 / 1000) * Math.PI * 2;
-          if (frameCount % 90 === 0) simBpm = Math.max(60, Math.min(100, simBpm + Math.round((Math.random() - 0.5) * 4)));
-          if (Math.sin(simPhase) > 0.65 && now - lastPeakTime > 320) {
-            lastPeakTime = now; bpmHistory.push(simBpm + Math.round((Math.random() - 0.5) * 4));
-            if (bpmHistory.length > 8) bpmHistory.shift();
-            const s = Math.round(bpmHistory.reduce((a, b) => a + b, 0) / bpmHistory.length);
-            setBpm(s); liveBpmRef.current = s;
-            const l = document.querySelector('.bio-bpm-label'); if (l) { l.classList.add('bpm-flash'); setTimeout(() => l.classList.remove('bpm-flash'), 120); }
-          }
-        }
+        // No finger detected after 5s → keep showing SCANNING... (no fake BPM)
       }, 33);
     } catch (err: any) { console.error(err); setIsScanning(false); alert(`Camera error: ${err?.message || err}`); }
   };
