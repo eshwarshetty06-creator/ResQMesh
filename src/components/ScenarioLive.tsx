@@ -78,7 +78,7 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
     const [qrDataUrl, setQrDataUrl] = useState<string>('');
     const [msgInput, setMsgInput] = useState('');
     const msgInputRef = useRef(''); // always-fresh value for mobile event handlers
-    const [dtfQueue, setDtfQueue] = useState<string[]>([]);
+    const [_dtfQueue, setDtfQueue] = useState<string[]>([]);
 
     // --- SERVER-FREE DIRECT MODE STATE ---
     const [directMode, setDirectMode] = useState<'idle' | 'offering' | 'waiting-answer' | 'answering' | 'connected'>('idle');
@@ -102,6 +102,7 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
     const [nearbyPeers, setNearbyPeers] = useState<string[]>([]);
 
     const peerRef = useRef<Peer | null>(null);
+    const connectionsRef = useRef<DataConnection[]>([]); // always-fresh, no stale closure
     const mapRef = useRef<any>(null);
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -294,7 +295,7 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
 
     // --- MESH BROADCAST ---
     const broadcast = (data: any) => {
-        connections.forEach(c => c.send(data));
+        connectionsRef.current.forEach(c => { if (c.open) c.send(data); });
     };
 
     const addLog = (text: string) => {
@@ -303,19 +304,19 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
 
     const sendMessage = (text: string) => {
         if (!text.trim()) return;
-        resetDMS(); // any sent message = node is alive
-        if (connections.length === 0) {
-            // Store-Carry-Forward: queue packet for when peer connects
+        resetDMS();
+        if (connectionsRef.current.length === 0) {
             setDtfQueue(prev => [...prev, text]);
             setMessages(prev => [...prev, { sender: 'ME', text, time: new Date().toLocaleTimeString() }]);
-            addLog(`📦 DTF QUEUED: Packet stored. Will auto-relay when peer connects. (${dtfQueue.length + 1} queued)`);
+            addLog(`📦 DTF QUEUED (no peer) — will send when connected`);
         } else {
             broadcast(text);
             setMessages(prev => [...prev, { sender: 'ME', text, time: new Date().toLocaleTimeString() }]);
         }
     };
+    // Keep connectionsRef in sync so sendMessage never reads stale state
+    useEffect(() => { connectionsRef.current = connections; }, [connections]);
 
-    // --- MESH LOGIC ---
     const setupConnection = (c: DataConnection) => {
         setConnections(prev => [...prev, c]);
         addLog(`🔗 SECURE LINK: ${c.peer}`);
@@ -743,8 +744,13 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                     <button
                                         type="button"
                                         className="icon-btn-action"
-                                        onPointerDown={e => {
-                                            e.preventDefault();
+                                        style={{ touchAction: 'manipulation' }}
+                                        onTouchEnd={e => {
+                                            e.preventDefault(); // prevents duplicate click on mobile
+                                            const msg = msgInputRef.current.trim();
+                                            if (msg) { sendMessage(msg); setMsgInput(''); msgInputRef.current = ''; }
+                                        }}
+                                        onClick={() => {
                                             const msg = msgInputRef.current.trim();
                                             if (msg) { sendMessage(msg); setMsgInput(''); msgInputRef.current = ''; }
                                         }}
