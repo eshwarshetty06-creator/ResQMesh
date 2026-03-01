@@ -753,7 +753,15 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                         autoCorrect="off"
                                         enterKeyHint="send"
                                     />
-                                    <button type="submit" className="icon-btn-action"><Zap size={20} /></button>
+                                    {/* onPointerDown fires BEFORE input blur on Android — reads msgInput before keyboard dismisses */}
+                                    <button
+                                        type="submit"
+                                        className="icon-btn-action"
+                                        onPointerDown={e => {
+                                            e.preventDefault(); // stop blur race
+                                            if (msgInput.trim()) { sendMessage(msgInput.trim()); setMsgInput(''); }
+                                        }}
+                                    ><Zap size={20} /></button>
                                 </form>
                                 <div className="quick-link-bar">
                                     <input value={peerIdInput} onChange={e => setPeerIdInput(e.target.value.toUpperCase())} placeholder="PEER ID" />
