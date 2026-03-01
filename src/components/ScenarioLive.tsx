@@ -312,13 +312,16 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
         } else {
             broadcast(text);
             setMessages(prev => [...prev, { sender: 'ME', text, time: new Date().toLocaleTimeString() }]);
+            console.log("BROADCAST SENT", text);
         }
     };
     // Keep connectionsRef in sync so sendMessage never reads stale state
     useEffect(() => { connectionsRef.current = connections; }, [connections]);
 
     const setupConnection = (c: DataConnection) => {
-        setConnections(prev => [...prev, c]);
+        const newConnections = [...connectionsRef.current, c];
+        setConnections(newConnections);
+        connectionsRef.current = newConnections; // Immediate update to avoid stale state in sendMessage
         addLog(`🔗 SECURE LINK: ${c.peer}`);
         // Store-Carry-Forward: auto-drain queued packets to new peer
         setDtfQueue(prev => {
@@ -742,18 +745,9 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                         enterKeyHint="send"
                                     />
                                     <button
-                                        type="button"
+                                        type="submit"
                                         className="icon-btn-action"
                                         style={{ touchAction: 'manipulation' }}
-                                        onTouchEnd={e => {
-                                            e.preventDefault(); // prevents duplicate click on mobile
-                                            const msg = msgInputRef.current.trim();
-                                            if (msg) { sendMessage(msg); setMsgInput(''); msgInputRef.current = ''; }
-                                        }}
-                                        onClick={() => {
-                                            const msg = msgInputRef.current.trim();
-                                            if (msg) { sendMessage(msg); setMsgInput(''); msgInputRef.current = ''; }
-                                        }}
                                     ><Zap size={20} /></button>
                                 </form>
                                 <div className="quick-link-bar">
