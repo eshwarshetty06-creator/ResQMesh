@@ -36,3 +36,6 @@ ios
 
 # AI tooling
 .gemini
+
+.vercel
+.env*.local

@@ -269,12 +269,16 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
         setDmsFired(false);
     }, [dmsFired]);
 
-    // ─── Node Discovery — poll local PeerJS server every 20 s
+    // ─── Node Discovery — poll PeerJS server every 20 s
     useEffect(() => {
         if (!myId) return;
         const discover = async () => {
             try {
-                const res = await fetch(`http://${window.location.hostname}:9000/peerjs/peers`);
+                const isLocal = window.location.hostname === 'localhost' || !!window.location.hostname.match(/^192\.168\.|^10\.|^172\.(1[6-9]|2[0-9]|3[01])\./);
+                const discoverUrl = isLocal
+                    ? `http://${window.location.hostname}:9000/peerjs/peers`
+                    : `https://${import.meta.env.VITE_PEER_HOST || 'resqmesh.onrender.com'}/peerjs/peers`;
+                const res = await fetch(discoverUrl);
                 if (res.ok) {
                     const peers: string[] = await res.json();
                     setNearbyPeers(peers.filter(p => p !== myId));
