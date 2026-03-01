@@ -249,6 +249,16 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
         }
     }, [myId]);
 
+    // --- MOBILE HEARTBEAT ---
+    useEffect(() => {
+        const iv = setInterval(() => {
+            if (connectionsRef.current.length > 0) {
+                broadcast('HB'); // Keep connection alive on mobile
+            }
+        }, 15000);
+        return () => clearInterval(iv);
+    }, []);
+
     // ─── Keep TTS ref in sync so closures always read current value
     useEffect(() => { ttsEnabledRef.current = ttsEnabled; }, [ttsEnabled]);
 
@@ -305,42 +315,55 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
     const sendMessage = (text: string) => {
         if (!text.trim()) return;
         resetDMS();
+
+        // Use the ref directly to avoid stale state issues on mobile
         if (connectionsRef.current.length === 0) {
             setDtfQueue(prev => [...prev, text]);
-            setMessages(prev => [...prev, { sender: 'ME', text, time: new Date().toLocaleTimeString() }]);
-            addLog(`📦 DTF QUEUED (no peer) — will send when connected`);
+            setMessages(prev => [...prev, { sender: 'ME', text: `📦 [QUEUED] ${text}`, time: new Date().toLocaleTimeString() }]);
+            addLog(`📦 DTF: No active peers. Message stored in local mesh.`);
         } else {
             broadcast(text);
             setMessages(prev => [...prev, { sender: 'ME', text, time: new Date().toLocaleTimeString() }]);
-            console.log("BROADCAST SENT", text);
         }
     };
     // Keep connectionsRef in sync so sendMessage never reads stale state
     useEffect(() => { connectionsRef.current = connections; }, [connections]);
 
     const setupConnection = (c: DataConnection) => {
-        const newConnections = [...connectionsRef.current, c];
-        setConnections(newConnections);
-        connectionsRef.current = newConnections; // Immediate update to avoid stale state in sendMessage
-        addLog(`🔗 SECURE LINK: ${c.peer}`);
-        // Store-Carry-Forward: auto-drain queued packets to new peer
-        setDtfQueue(prev => {
-            if (prev.length > 0) {
-                addLog(`📡 DTF RELAY: Draining ${prev.length} stored packet(s) to ${c.peer}`);
-                prev.forEach(msg => c.send(msg));
-                return [];
-            }
-            return prev;
-        });
+        if (!c) return;
 
-        if (myLocation) {
-            c.send(`LOC:${myId}|${myLocation[0]}|${myLocation[1]}|${role}|${triage}|${initialData?.bpm || 0}`);
-        }
+        const init = () => {
+            if (connectionsRef.current.find(conn => conn.peer === c.peer)) return;
+
+            const up = [...connectionsRef.current, c];
+            connectionsRef.current = up;
+            setConnections(up);
+
+            addLog(`🔗 SECURE LINK: ${c.peer}`);
+
+            // RELAY DTF QUEUE
+            setDtfQueue(prev => {
+                if (prev.length > 0) {
+                    addLog(`📡 RELAY: Draining ${prev.length} queued packets to ${c.peer}`);
+                    prev.forEach(m => c.send(m));
+                    return [];
+                }
+                return prev;
+            });
+
+            if (myLocation) {
+                c.send(`LOC:${myId}|${myLocation[0]}|${myLocation[1]}|${role}|${triage}|${initialData?.bpm || 0}`);
+            }
+        };
+
+        if (c.open) init(); else c.on('open', init);
 
         c.on('data', (data: any) => {
+            if (data === 'HB') return; // Filter heartbeat
+
             if (typeof data === 'object' && data.type === 'voice-burst') {
                 setRadioMessages(prev => [{ sender: data.sender, time: new Date().toLocaleTimeString(), audio: data.audio }, ...prev]);
-                new Audio(data.audio).play().catch(() => addLog("VOX BLOCKED: USER INPUT REQ"));
+                new Audio(data.audio).play().catch(() => { });
                 return;
             }
 
@@ -748,6 +771,16 @@ export default function ScenarioLive({ onBack, initialData }: { onBack: () => vo
                                         type="submit"
                                         className="icon-btn-action"
                                         style={{ touchAction: 'manipulation' }}
+                                        onPointerDown={e => {
+                                            // Forces immediate read on mobile before keyboard dismiss
+                                            const msg = msgInputRef.current.trim();
+                                            if (msg) {
+                                                sendMessage(msg);
+                                                setMsgInput('');
+                                                msgInputRef.current = '';
+                                                e.preventDefault();
+                                            }
+                                        }}
                                     ><Zap size={20} /></button>
                                 </form>
                                 <div className="quick-link-bar">
