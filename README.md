@@ -37,7 +37,7 @@ ResQMesh is built for environments where normal infrastructure is destroyed. The
 graph TD
 
     %% SCENARIO 1
-    subgraph 1. Local Network Available (No Internet required)
+    subgraph S1 [1. Local Network Available - No Internet]
         Router[📶 Local WiFi Router / Hotspot]
         
         Client1[📱 Responder 1]
@@ -56,7 +56,7 @@ graph TD
     end
 
     %% SCENARIO 2
-    subgraph  2. Zero Infrastructure (Direct Mode)
+    subgraph S2 [2. Zero Infrastructure - Direct Mode]
         NodeX[📱 Isolated Responder]
         NodeY[📱 Isolated Civilian]
         
@@ -65,7 +65,7 @@ graph TD
     end
     
     %% SCENARIO 3
-    subgraph 3. Pre-Deployment (Internet Available)
+    subgraph S3 [3. Pre-Deployment - Internet Available]
         Cloud[☁️ Firebase Cloud Auth]
         NodeZ[📱 Responder Phone]
         
