@@ -111,6 +111,12 @@ npm run build   # Outputs to dist/ directory
 
 We use Capacitor to sync the optimal web app into a robust Android App structure natively.
 
+**First time setup (after cloning):**
+```bash
+npx cap add android  # Generates the local Android Studio project
+```
+
+**Building & Running:**
 ```bash
 # Build the web bundle and sync it into the Android directory
 npm run mobile:build
