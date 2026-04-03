@@ -1,0 +1,28 @@
+/* ResQMesh — Global App Shell
+ * All component-level design tokens (dark theme, glass, etc.) live
+ * inside Dashboard.tsx and ScenarioLive.tsx as scoped <style> blocks.
+ * This file handles only the bare structural necessities.
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+.App {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Ensure canvas elements don't add extra spacing */
+canvas {
+  display: block;
+}
+
+/* Global form element font inheritance */
+input,
+button,
+textarea,
+select {
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  outline: none;
+}
