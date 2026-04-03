@@ -31,37 +31,55 @@ In the aftermath of events like earthquakes, hurricanes, or systemic grid failur
 
 ## 🏛️ System Architecture
 
-ResQMesh operates fundamentally on a hybrid model that heavily relies on an ad-hoc Peer-to-Peer architecture. When operating offline, nodes discover each other using a compact local signaling server, after which communication paths are mapped using direct WebRTC pathways.
+ResQMesh is built for environments where normal infrastructure is destroyed. The system adapts automatically to your environment based on three different scenarios, ensuring you are always connected.
 
 ```mermaid
-graph TD;
-    subgraph Offline Disaster Zone
-        Node_A(📱 Mobile Client A) <-->|WebRTC Data/Voice| Node_B(💻 Laptop Commander)
-        Node_A <-->|WebRTC Data/Voice| Node_C(📱 Mobile Client B)
-        Node_B <-->|WebRTC Data/Voice| Node_C
+graph TD
 
-        LocalSignal[📶 Local Signaling Server\n(Raspberry Pi / Laptop)] -.->|IP/Port Sharing| Node_A
-        LocalSignal -.->|IP/Port Sharing| Node_B
-        LocalSignal -.->|IP/Port Sharing| Node_C
+    %% SCENARIO 1
+    subgraph 1. Local Network Available (No Internet required)
+        Router[📶 Local WiFi Router / Hotspot]
+        
+        Client1[📱 Responder 1]
+        Client2[💻 Command Post]
+        Client3[📱 Responder 2]
+        
+        %% Connections to router
+        Client1 -. "1. Connect for Discovery" .-> Router
+        Client2 -. "1. Connect for Discovery" .-> Router
+        Client3 -. "1. Connect for Discovery" .-> Router
+        
+        %% Real P2P traffic
+        Client1 === "2. Direct WebRTC Traffic (Voice, Map, Text)" === Client2
+        Client2 === "2. Direct WebRTC Traffic (Voice, Map, Text)" === Client3
+        Client1 === "2. Direct WebRTC Traffic (Voice, Map, Text)" === Client3
     end
 
-    subgraph Firebase Cloud Services
-        Auth[Firebase OTP] -->|Authenticate| Node_A
-        Auth -->|Authenticate| Node_B
+    %% SCENARIO 2
+    subgraph  2. Zero Infrastructure (Direct Mode)
+        NodeX[📱 Isolated Responder]
+        NodeY[📱 Isolated Civilian]
+        
+        NodeX -. "1. Scan QR Code" .-> NodeY
+        NodeX === "2. Direct P2P Device Connection" === NodeY
+    end
+    
+    %% SCENARIO 3
+    subgraph 3. Pre-Deployment (Internet Available)
+        Cloud[☁️ Firebase Cloud Auth]
+        NodeZ[📱 Responder Phone]
+        
+        Cloud -. "Authenticate via OTP SMS prior to dispatch" .-> NodeZ
     end
 
-    subgraph Direct Mode
-        Node_D(📱 Isolated Node 1) <-->|QR Code SDP Exchange| Node_E(📱 Isolated Node 2)
-    end
+    %% Styles for a clean look
+    classDef device fill:#2b2b2b,stroke:#4CAF50,stroke-width:2px,color:#fff;
+    classDef router fill:#1e1e1e,stroke:#FF9800,stroke-width:2px,stroke-dasharray: 5 5,color:#fff;
+    classDef cloud fill:#0d233a,stroke:#2196F3,stroke-width:2px,color:#fff;
 
-    classDef mesh fill:#2a2a2a,stroke:#4caf50,stroke-width:2px;
-    classDef infra fill:#202020,stroke:#2196f3,stroke-width:2px;
-    classDef local fill:#151515,stroke:#ff9800,stroke-width:2px;
-
-    class Node_A,Node_B,Node_C mesh;
-    class Auth infra;
-    class LocalSignal local;
-    class Node_D,Node_E mesh;
+    class Client1,Client2,Client3,NodeX,NodeY,NodeZ device;
+    class Router router;
+    class Cloud cloud;
 ```
 
 ---
