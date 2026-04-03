@@ -130,9 +130,18 @@ If you intend to host the remote signaling interface for WAN-connected edge-node
 
 **Required Environment Variables (e.g., on Vercel):**
 ```env
+# For Cloud PeerJS Signaling
 VITE_PEER_HOST=your-server.onrender.com
 VITE_PEER_PORT=443
 VITE_PEER_PATH=/peerjs
+
+# For Firebase OTP Authentication
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=res-q-mesh.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=res-q-mesh
+VITE_FIREBASE_STORAGE_BUCKET=res-q-mesh.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
 ```
 
 ---
