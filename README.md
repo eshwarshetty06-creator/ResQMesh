@@ -80,6 +80,18 @@ Please check the **`DEMO VEDIO/`** directory in this repository to find video wa
 
 ---
 
+## 🔐 Demo Credentials
+If you are evaluating this project, you can use the following pre-configured credentials to bypass the live authentication systems during testing:
+
+**Civilian / Responder User:**
+- Phone Number: `+91 9876543210` (or your local country code equivalent)
+- OTP: `1234`
+
+**Command Post / Server Node:**
+- Password: `admin123`
+
+---
+
 ## 💻 Getting Started
 
 ### Prerequisites
