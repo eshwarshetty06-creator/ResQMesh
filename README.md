@@ -34,52 +34,30 @@ In the aftermath of events like earthquakes, hurricanes, or systemic grid failur
 ResQMesh is built for environments where normal infrastructure is destroyed. The system adapts automatically to your environment based on three different scenarios, ensuring you are always connected.
 
 ```mermaid
-graph TD
-
-    %% SCENARIO 1
-    subgraph S1 [1. Local Network Available - No Internet]
-        Router[📶 Local WiFi Router / Hotspot]
-        
-        Client1[📱 Responder 1]
-        Client2[💻 Command Post]
-        Client3[📱 Responder 2]
-        
-        %% Connections to router
-        Client1 -. "1. Connect for Discovery" .-> Router
-        Client2 -. "1. Connect for Discovery" .-> Router
-        Client3 -. "1. Connect for Discovery" .-> Router
-        
-        %% Real P2P traffic
-        Client1 === "2. Direct WebRTC Traffic (Voice, Map, Text)" === Client2
-        Client2 === "2. Direct WebRTC Traffic (Voice, Map, Text)" === Client3
-        Client1 === "2. Direct WebRTC Traffic (Voice, Map, Text)" === Client3
-    end
-
-    %% SCENARIO 2
-    subgraph S2 [2. Zero Infrastructure - Direct Mode]
-        NodeX[📱 Isolated Responder]
-        NodeY[📱 Isolated Civilian]
-        
-        NodeX -. "1. Scan QR Code" .-> NodeY
-        NodeX === "2. Direct P2P Device Connection" === NodeY
-    end
+flowchart TD
+    Start([📡 Responder Deployed in Disaster Zone]) --> Condition{Is there any local WiFi or Hotspot?}
     
-    %% SCENARIO 3
-    subgraph S3 [3. Pre-Deployment - Internet Available]
-        Cloud[☁️ Firebase Cloud Auth]
-        NodeZ[📱 Responder Phone]
-        
-        Cloud -. "Authenticate via OTP SMS prior to dispatch" .-> NodeZ
-    end
-
-    %% Styles for a clean look
-    classDef device fill:#2b2b2b,stroke:#4CAF50,stroke-width:2px,color:#fff;
-    classDef router fill:#1e1e1e,stroke:#FF9800,stroke-width:2px,stroke-dasharray: 5 5,color:#fff;
-    classDef cloud fill:#0d233a,stroke:#2196F3,stroke-width:2px,color:#fff;
-
-    class Client1,Client2,Client3,NodeX,NodeY,NodeZ device;
-    class Router router;
-    class Cloud cloud;
+    Condition -->|Yes, but no Internet| Route1[Connect to Local WiFi Hub]
+    Condition -->|No, Complete Dead Zone| Route2[Generate QR Code on Phone]
+    
+    Route1 --> Discovery[Background Signaling Server]
+    Discovery -. "Finds Peers Automatically" .-> WebRTC
+    
+    Route2 --> Scan[Other Responder Scans QR Code]
+    Scan -. "Direct SDP Key Exchange" .-> WebRTC
+    
+    WebRTC[[⚡ Secure WebRTC Peer-to-Peer Mesh ⚡]]
+    
+    WebRTC === Feature1(🗺️ Live Map Tracking)
+    WebRTC === Feature2(🎙️ Push-to-Talk Radio)
+    WebRTC === Feature3(🆘 MAYDAY Broadcaster)
+    
+    style Start fill:#1e1e1e,stroke:#2196F3,stroke-width:2px,color:#fff
+    style Condition fill:#2b2b2b,stroke:#FF9800,stroke-width:2px,color:#fff
+    style WebRTC fill:#0d233a,stroke:#4CAF50,stroke-width:3px,color:#fff
+    style Feature1 fill:#151515,stroke:#4CAF50,color:#fff
+    style Feature2 fill:#151515,stroke:#4CAF50,color:#fff
+    style Feature3 fill:#151515,stroke:#f44336,color:#fff
 ```
 
 ---
