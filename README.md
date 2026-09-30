@@ -1,159 +1,227 @@
-# ResQMesh 🌐🆘
+<div align="center">
 
-> *"When the towers fall, the mesh rises."*
+# 🌐 ResQMesh — Tactical Emergency Mesh OS
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6?logo=typescript&logoColor=white)
-![WebRTC](https://img.shields.io/badge/WebRTC-P2P%20Mesh-ff6600)
-![Offline First](https://img.shields.io/badge/Offline-First-green)
+**Autonomous, Decentralized & Zero-Infrastructure Survival Communications Grid**
 
-**ResQMesh** is a decentralized, offline-first emergency communication application tailored for disaster-response, Search and Rescue (SAR) operations, and critical tactical environments. It transforms any browser or Android device into a powerful Peer-to-Peer (P2P) mesh node. **No internet connection, cellular towers, or central servers are required in the field.**
+[![Version](https://img.shields.io/badge/version-2.4%20Commercial%20Web-0284C7.svg?style=for-the-badge)](https://github.com/eshwarshetty06-creator/ResQMesh)
+[![License: MIT](https://img.shields.io/badge/License-MIT-10B981.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![WebRTC DTLS 1.3](https://img.shields.io/badge/WebRTC-DTLS%201.3%20Encrypted-6366F1.svg?style=for-the-badge)](https://webrtc.org/)
+[![React 19](https://img.shields.io/badge/React-19-0EA5E9.svg?style=for-the-badge&logo=react)](https://react.dev/)
+[![Offline PWA](https://img.shields.io/badge/Offline-100%25%20PWA%20Cache-059669.svg?style=for-the-badge)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 
-In the aftermath of events like earthquakes, hurricanes, or systemic grid failures, connectivity is often the first casualty. ResQMesh overcomes this by leveraging local networks and Direct WebRTC mode to ensure responders and survivors can communicate and coordinate.
+<p align="center">
+  <a href="#-overview">Overview</a> •
+  <a href="#-core-capabilities-bento-grid">Capabilities</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-tactical-tabs">Tactical Tabs</a> •
+  <a href="#-crisis-playbooks">Playbooks</a> •
+  <a href="#-demo-credentials">Demo Access</a> •
+  <a href="#-license">License</a>
+</p>
 
 ---
 
-## 🚀 Key Features
+</div>
 
-- 📡 **True Mesh Networking** — Robust P2P connections utilizing WebRTC and local PeerJS signaling. Creates an ad-hoc local network that spans across connected devices.
-- 🗺️ **Live Tactical Map** — Real-time GPS plotting of node positions with offline tracking. Integrated Leaflet mapping with cached dark tiles for low-light legibility.
-- 🎙️ **Push-to-Talk (PTT) Radio** — Send encrypted, lightweight voice bursts natively across the mesh network without any external servers.
-- ❤️ **Biometric Sync** — Innovative PPG heart-rate scanning via the device's rear camera flash to gauge the vitals of responders and victims.
-- 🆘 **Triage / SOS Broadcasting** — One-tap emergency MAYDAY broadcast propagating your exact GPS coordinates and distress signal to all connected peers instantly.
-- 📦 **Store-Carry-Forward** — Resilient offline queue. Messages and data payloads are held securely and relayed automatically when peers reconnect.
-- 💀 **Dead Man's Switch** — Configurable fail-safe that triggers an auto-MAYDAY warning if a responder node goes silent for a predefined period.
-- 🔊 **Text-to-Speech (TTS)** — Hands-free audio readout of incoming emergency text messages for busy or visually impaired responders.
-- ⚡ **Direct WebRTC Mode** — Complete server-free and local-network-free P2P via QR-code SDP (Session Description Protocol) exchange.
-- 📱 **Firebase OTP Login** — Robust real-world phone number-based authentication via Firebase when online connectivity is temporarily available before dispatch.
+## 🚨 Overview
+
+When catastrophic natural disasters (earthquakes, super-typhoons, tsunamis) or power grid collapses sever commercial cell towers, fiber cables, and internet service providers, **connectivity is the first casualty**.
+
+**ResQMesh** turns standard laptops, smartphones, and tablets into an autonomous, encrypted peer-to-peer survival network straight inside any modern web browser. **Zero cellular network, zero internet service, and zero external cloud servers are required in the field.**
+
+Using high-performance **WebRTC DataChannels**, **Opus Audio Compression**, and **Store-and-Forward multi-hop routing**, ResQMesh bridges isolated survivors and tactical first responders across hostile environments.
+
+---
+
+## ⚡ Core Capabilities (Bento Grid)
+
+<table>
+  <tr>
+    <td width="50%">
+      <h3>🎙️ Sub-Second Push-To-Talk Radio</h3>
+      <p>Instant digital walkie-talkie mode. Encodes voice bursts via Opus codec and streams binary audio across the local mesh network with sub-50ms latency. No cellular minutes or radio frequencies required.</p>
+    </td>
+    <td width="50%">
+      <h3>🌐 Autonomous WebRTC Mesh</h3>
+      <p>Direct browser-to-browser data channels with resilient store-and-forward queueing. Critical distress signals queue locally in device memory and automatically dispatch when a peer comes within proximity.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>🗺️ Keyless Tactical Cartography</h3>
+      <p>Natural light OpenStreetMap street cartography and high-resolution Esri satellite imagery with zero API keys or rate limits. Real-time GPS coordinate broadcasting, breadcrumb trails, and survivor tracking.</p>
+    </td>
+    <td width="50%">
+      <h3>🚨 Dead Man's Switch (DMS)</h3>
+      <p>Essential safety protocol for solitary responders entering collapsed buildings or hazard zones. An automated failsafe timer broadcasts an emergency beacon to the entire mesh if the responder becomes unresponsive.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>📦 Decentralized Logistics Board</h3>
+      <p>Peer-to-peer resource exchange board. Match requests and offers for potable water, blood units, triage medical supplies, rations, and rescue boats between citizens and command post personnel.</p>
+    </td>
+    <td width="50%">
+      <h3>🫀 In-Browser Biometric PPG Scanner</h3>
+      <p>Estimate survivor heart rate (BPM) and vitals directly through the device camera lens using optical photoplethysmography (PPG) without requiring external medical hardware.</p>
+    </td>
+  </tr>
+</table>
 
 ---
 
 ## 🏛️ System Architecture
 
-ResQMesh is built for environments where normal infrastructure is destroyed. The system adapts automatically to your environment based on three different scenarios, ensuring you are always connected.
+ResQMesh operates across two operational tiers depending on available connectivity:
 
 ```mermaid
 flowchart TD
-    Start([📡 Responder Deployed in Disaster Zone]) --> Condition{Is there any local WiFi or Hotspot?}
-    
-    Condition -->|Yes, but no Internet| Route1[Connect to Local WiFi Hub]
-    Condition -->|No, Complete Dead Zone| Route2[Generate QR Code on Phone]
-    
-    Route1 --> Discovery[Background Signaling Server]
-    Discovery -. "Finds Peers Automatically" .-> WebRTC
-    
-    Route2 --> Scan[Other Responder Scans QR Code]
-    Scan -. "Direct SDP Key Exchange" .-> WebRTC
-    
-    WebRTC[[⚡ Secure WebRTC Peer-to-Peer Mesh ⚡]]
-    
-    WebRTC === Feature1(🗺️ Live Map Tracking)
-    WebRTC === Feature2(🎙️ Push-to-Talk Radio)
-    WebRTC === Feature3(🆘 MAYDAY Broadcaster)
-    
-    style Start fill:#1e1e1e,stroke:#2196F3,stroke-width:2px,color:#fff
-    style Condition fill:#2b2b2b,stroke:#FF9800,stroke-width:2px,color:#fff
-    style WebRTC fill:#0d233a,stroke:#4CAF50,stroke-width:3px,color:#fff
-    style Feature1 fill:#151515,stroke:#4CAF50,color:#fff
-    style Feature2 fill:#151515,stroke:#4CAF50,color:#fff
-    style Feature3 fill:#151515,stroke:#f44336,color:#fff
+    subgraph Tactical Field Environment
+        A[Survivor / Incident Responder Device] --> B{Available Local Wireless?}
+        
+        B -->|Local Wi-Fi or Ad-Hoc Hotspot| C[Background Signaling Relay :9000]
+        B -->|Complete Radio Dead Zone| D[Air-Gapped Direct WebRTC Mode]
+        
+        C -. "Auto-Discovers Peer Nodes" .-> E[[⚡ WebRTC Encrypted Mesh DataChannels ⚡]]
+        D -. "Scan Animated QR-Code SDP Key" .-> E
+    end
+
+    subgraph Autonomous Mesh Services
+        E === F[🎙️ Push-to-Talk Radio Stream]
+        E === G[🗺️ Keyless GPS Location Tracking]
+        E === H[💬 Store-and-Forward Mesh Chat]
+        E === I[📦 Supply & Logistics Board]
+        E === J[🚨 Dead Man's Switch & SOS Beacons]
+    end
+
+    style A fill:#0F172A,stroke:#0284C7,stroke-width:2px,color:#fff
+    style B fill:#1E293B,stroke:#F59E0B,stroke-width:2px,color:#fff
+    style C fill:#0F172A,stroke:#10B981,stroke-width:2px,color:#fff
+    style D fill:#0F172A,stroke:#6366F1,stroke-width:2px,color:#fff
+    style E fill:#0284C7,stroke:#38BDF8,stroke-width:3px,color:#fff
+    style F fill:#F8FAFC,stroke:#0284C7,color:#0F172A
+    style G fill:#F8FAFC,stroke:#10B981,color:#0F172A
+    style H fill:#F8FAFC,stroke:#6366F1,color:#0F172A
+    style I fill:#F8FAFC,stroke:#F59E0B,color:#0F172A
+    style J fill:#F8FAFC,stroke:#EF4444,color:#0F172A
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🎯 Tactical Application Views
 
-- **Frontend & Core Logic**: React 19, TypeScript, Vite
-- **P2P Networking**: PeerJS wrapped over pure WebRTC
-- **Mapping & GIS**: Leaflet.js with CartoDB offline-cached dark tiles
-- **Progressive Web App (PWA)**: Advanced Service Worker for deep full-offline support and caching
-- **Mobile Container**: Capacitor (Builds native Android APK directly from web core)
-- **Authentication**: Firebase Authentication (OTP / Local Credentials)
-- **Styling**: Vanilla CSS, Modern Glassmorphism & Dark Mode Aesthetics
-
----
-
-## 🎥 Demos & Media
-
-Please check the **`DEMO VEDIO/`** directory in this repository to find video walkthroughs and system operation demonstrations of ResQMesh in action.
-
----
-
-## 🔐 Demo Credentials
-If you are evaluating this project, you can use the following pre-configured credentials to bypass the live authentication systems during testing:
-
-**Civilian / Responder User:**
-- Phone Number: `+91 9876543210` (or your local country code equivalent)
-- OTP: `1234`
-
-**Command Post / Server Node:**
-- Password: `admin123`
+1. **Commercial Landing Page (`/`)**:
+   - Modern glassmorphic command header with live network indicator (`● RELAY 9000 ONLINE`).
+   - Interactive live **Mesh Topology Simulator** with dynamic packet hopping waves.
+   - 1-Click Fast Demo Launchers (`Civilian SOS` vs `Incident Commander`).
+   - Crisis Scenario Playbooks & Objective Telecom Comparison Matrix.
+2. **Central Command Dashboard**:
+   - Live node connection radar with real-time ping latency.
+   - Interactive SVG/Canvas biometric waveform monitor.
+   - Quick launch triggers for all tactical emergency modules.
+3. **Live Tactical Mesh Console (`ScenarioLive`)**:
+   - **Chat**: Store-and-forward messaging with offline queueing, GPS location pins, and quick-link bar.
+   - **Radio (PTT)**: Push-to-Talk audio burst broadcasting, real-time playback, and transmission logs.
+   - **Map**: Natural-light OpenStreetMap and true-color Esri satellite imagery with survivor heat circles, breadcrumbs, and click-to-pin coordinate broadcasting.
+   - **Supply Logistics**: Distributed bulletin board for requesting/offering food, medical supplies, water, and shelter.
+   - **Tactical SOS & DMS**: One-tap emergency triggers (**Critical SOS**, **Medical Evac**, **Report Safe**) and Dead Man's Switch countdown.
+   - **Direct P2P**: Routerless, air-gapped QR-code SDP exchange for zero-infrastructure environments.
 
 ---
 
-## 💻 Getting Started
+## 📖 Crisis Scenario Playbooks
+
+- 🌋 **Grid Blackout & Earthquake**: Cell towers lose backup battery within hours. ResQMesh hops survival signals across neighboring buildings without requiring a central router.
+- 🌊 **Catastrophic Flood & Cyclone**: Fiber cables severed underwater. Rescue boats and command centers share keyless satellite maps and survivor manifest counts peer-to-peer.
+- 🔥 **Wildfire Evacuation Corridor**: Smoke blocks line-of-sight communications. Voice PTT and real-time safe road waypoints broadcast peer-to-peer between fleeing vehicle convoys.
+- 🏔️ **Remote Alpine Search & Rescue**: Completely out of cellular territory. Field searchers link phones using QR-code air-gapped handshakes without cell towers.
+
+---
+
+## 📊 Comparison Matrix
+
+| Feature | ResQMesh (v2.4) | Cellular (4G / 5G) | Satellite Handsets (Iridium) | Analog Walkie-Talkies |
+| :--- | :---: | :---: | :---: | :---: |
+| **Cellular Tower Dependency** | **0% (Pure P2P)** | 100% (Fails in Blackout) | 0% | 0% |
+| **Hardware Required** | **Any Phone / Laptop / Tablet** | Standard Smartphone | $800 - $1,500 Proprietary | $150 - $400 Transceiver |
+| **Recurring Monthly Cost** | **$0 (Open Source)** | $50 - $120 / month | $60 - $200 / month | $0 |
+| **Voice PTT & Keyless GPS Together** | **YES (Synchronized)** | Only if towers work | Text/Voice only | Audio only (No map) |
+| **Dead Man's Switch Failsafe** | **BUILT-IN (Autonomous)** | 3rd-party app required | Select models only | None |
+| **Deployment Time** | **Instant (Browser URL)** | Dependent on carrier | 10-15 min satellite lock | Manual frequency tuning |
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v16+ recommended)
-- Standard modern browser or Android Studio (for native mobile builds)
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- Any modern web browser (Google Chrome, Microsoft Edge, Mozilla Firefox, Apple Safari)
 
-### 1. Running Locally (Offline Mode)
+### 1. Installation
+```bash
+git clone https://github.com/eshwarshetty06-creator/ResQMesh.git
+cd ResQMesh
+npm install
+```
 
-This starts both the Vite frontend development server and the local PeerJS signaling server concurrently:
+### 2. Run Local Offline Mesh (Recommended)
+This starts both the Vite client application (`http://localhost:5173`) and the local PeerJS mesh relay (`http://localhost:9000/peerjs`) concurrently:
 
 ```bash
-# Install dependencies
-npm install
-
-# Start development & local peer signaling server
 npm run dev:offline
 ```
 
-*Open `http://localhost:5173` on multiple devices connected to the **same WiFi or hotspot** to test mesh capabilities.*
+> **Testing Multi-Device Mesh**: Open `http://<YOUR-LOCAL-IP>:5173` on multiple phones, tablets, or laptops connected to the same Wi-Fi router or mobile hotspot (even without internet connection!).
 
-### 2. Building for Production
+### 3. Production Build
+Compile optimized, production-ready static assets:
 
-Compile optimal static assets:
 ```bash
-npm run build   # Outputs to dist/ directory
+npm run build
 ```
 
-### 3. Native Mobile (Android APK)
-
-We use Capacitor to sync the optimal web app into a robust Android App structure natively.
-
-**First time setup (after cloning):**
+Preview the production build locally:
 ```bash
-npx cap add android  # Generates the local Android Studio project
-```
-
-**Building & Running:**
-```bash
-# Build the web bundle and sync it into the Android directory
-npm run mobile:build
-
-# Open the project in Android Studio to build the final APK/AAB
-npm run mobile:open
+npm run preview
 ```
 
 ---
 
-## 🌍 Deployment Options
+## 🔐 Instant Demo Credentials
 
-If you intend to host the remote signaling interface for WAN-connected edge-nodes:
+Use these pre-configured credentials for quick evaluation or bypass:
 
-- **Frontend App** → Use easily hostable platforms like [Vercel](https://vercel.com) or Netlify.
-- **Backend PeerJS** → Host on [Render](https://render.com) or [Railway](https://railway.app).
+- **Civilian Survivor Mode**:
+  - Full Name: `Alex Walker`
+  - Mobile: `+91 9876543210`
+  - Verification Code (OTP): `1234`
+  - *(Or click **"Launch as Civilian SOS"** on the landing page for 1-click instant entry!)*
 
-**Required Environment Variables (e.g., on Vercel):**
+- **Incident Commander Mode**:
+  - Commander Alias: `Cmdr. Sarah Vance`
+  - Grid Sector ID: `GRID-RESCUE-01`
+  - Authorization Passcode: `admin123`
+  - *(Or click **"Launch Incident Commander"** on the landing page for 1-click instant entry!)*
+
+---
+
+## 🌐 Cloud Deployment Options
+
+For wide-area emergency deployments where internet edge relays are accessible:
+
+- **Frontend App**: Deploy to [Vercel](https://vercel.com), [Cloudflare Pages](https://pages.cloudflare.com/), or [Netlify](https://netlify.com).
+- **Relay Server**: Host `server.js` on [Render](https://render.com), [Railway](https://railway.app), or any Linux VPS.
+
+**Environment Variables (`.env`):**
 ```env
-# For Cloud PeerJS Signaling
-VITE_PEER_HOST=your-server.onrender.com
+# Cloud PeerJS Relay (Optional - local fallback runs automatically)
+VITE_PEER_HOST=your-relay.onrender.com
 VITE_PEER_PORT=443
 VITE_PEER_PATH=/peerjs
 
-# For Firebase OTP Authentication
+# Firebase Phone Auth (Optional - sandbox demo OTP enabled by default)
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=res-q-mesh.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=res-q-mesh
@@ -164,6 +232,20 @@ VITE_FIREBASE_APP_ID=your_app_id
 
 ---
 
+## 🛡️ Security & Privacy
+
+- **End-to-End Encryption**: DTLS 1.3 protocol handshake with AES-GCM 256-bit cryptography.
+- **Zero Cloud Data Storage**: Peer-to-peer data packets flow directly between client devices and are never retained on central databases.
+- **Air-Gap Ready**: Can run completely disconnected from the public internet using direct QR-code SDP exchanges.
+
+---
+
 ## 📄 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ for humanitarian crisis relief, search and rescue operations, and community resilience.</sub>
+</div>

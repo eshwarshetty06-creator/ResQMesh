@@ -51,11 +51,11 @@ self.addEventListener('fetch', (event) => {
 
     if (isLocalDev) return; // pass through to network, no caching
 
-    // Map tile caching (OpenStreetMap / CartoDB)
+    // Map tile caching (OpenStreetMap / Esri Satellite)
     const isMapTile =
         url.hostname.includes('tile.openstreetmap.org') ||
-        url.hostname.includes('basemaps.cartocdn.com') ||
-        url.hostname.includes('cartodb-basemaps');
+        url.hostname.includes('server.arcgisonline.com') ||
+        url.hostname.includes('arcgisonline.com');
 
     if (isMapTile) {
         event.respondWith(

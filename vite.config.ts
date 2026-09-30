@@ -3,10 +3,7 @@ import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig(() => ({
-  // Web hosting (Render/Vercel) needs '/' for correct asset/SW paths.
-  // Capacitor WebView needs './' for relative paths inside the APK.
-  // Set CAPACITOR=true when building for mobile (see mobile:build script).
-  base: process.env.CAPACITOR === 'true' ? './' : '/',
+  base: '/',
   plugins: [react()],
   build: {
     outDir: 'dist',
