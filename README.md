@@ -5,7 +5,6 @@
 **Autonomous, Decentralized & Zero-Infrastructure Survival Communications Grid**
 
 [![Version](https://img.shields.io/badge/version-2.4%20Commercial%20Web-0284C7.svg?style=for-the-badge)](https://github.com/eshwarshetty06-creator/ResQMesh)
-[![License: MIT](https://img.shields.io/badge/License-MIT-10B981.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![WebRTC DTLS 1.3](https://img.shields.io/badge/WebRTC-DTLS%201.3%20Encrypted-6366F1.svg?style=for-the-badge)](https://webrtc.org/)
 [![React 19](https://img.shields.io/badge/React-19-0EA5E9.svg?style=for-the-badge&logo=react)](https://react.dev/)
 [![Offline PWA](https://img.shields.io/badge/Offline-100%25%20PWA%20Cache-059669.svg?style=for-the-badge)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
@@ -17,8 +16,7 @@
   <a href="#-quick-start">Quick Start</a> •
   <a href="#-tactical-tabs">Tactical Tabs</a> •
   <a href="#-crisis-playbooks">Playbooks</a> •
-  <a href="#-demo-credentials">Demo Access</a> •
-  <a href="#-license">License</a>
+  <a href="#-demo-credentials">Demo Access</a>
 </p>
 
 ---
@@ -146,7 +144,7 @@ flowchart TD
 | :--- | :---: | :---: | :---: | :---: |
 | **Cellular Tower Dependency** | **0% (Pure P2P)** | 100% (Fails in Blackout) | 0% | 0% |
 | **Hardware Required** | **Any Phone / Laptop / Tablet** | Standard Smartphone | $800 - $1,500 Proprietary | $150 - $400 Transceiver |
-| **Recurring Monthly Cost** | **$0 (Open Source)** | $50 - $120 / month | $60 - $200 / month | $0 |
+| **Recurring Monthly Cost** | **$0 (Zero Cloud Fees)** | $50 - $120 / month | $60 - $200 / month | $0 |
 | **Voice PTT & Keyless GPS Together** | **YES (Synchronized)** | Only if towers work | Text/Voice only | Audio only (No map) |
 | **Dead Man's Switch Failsafe** | **BUILT-IN (Autonomous)** | 3rd-party app required | Select models only | None |
 | **Deployment Time** | **Instant (Browser URL)** | Dependent on carrier | 10-15 min satellite lock | Manual frequency tuning |
@@ -237,12 +235,6 @@ VITE_FIREBASE_APP_ID=your_app_id
 - **End-to-End Encryption**: DTLS 1.3 protocol handshake with AES-GCM 256-bit cryptography.
 - **Zero Cloud Data Storage**: Peer-to-peer data packets flow directly between client devices and are never retained on central databases.
 - **Air-Gap Ready**: Can run completely disconnected from the public internet using direct QR-code SDP exchanges.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
 
 ---
 

@@ -1305,7 +1305,7 @@ export default function Login({ onLogin }: LoginProps) {
             <span>RFC 8829 WebRTC</span>
             <span>DTLS 1.3 / AES-GCM</span>
             <span>Zero-Telemetry</span>
-            <span>MIT Open Source</span>
+            <span>Air-Gap Verified</span>
           </div>
         </div>
 
